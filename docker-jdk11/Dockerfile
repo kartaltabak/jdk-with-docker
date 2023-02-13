@@ -1,4 +1,4 @@
-FROM openjdk:8-jdk
+FROM openjdk:11-jdk
 
 ARG USERNAME=jenkins
 ARG UID=1000
