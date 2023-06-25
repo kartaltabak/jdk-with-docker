@@ -9,6 +9,7 @@ def buildImage(String baseImage, String jdkVersion, String contextDirectory) {
             print("Building ${jdkVersion} image")
             String repoName = "kartaltabak/jdk-with-docker"
             GString taggedName = "${repoName}:${jdkVersion}:-${tag}"
+            print("docker.build(${taggedName}, ${contextDirectory})")
             String image = docker.build(taggedName, contextDirectory)
 
             sh "docker run --rm ${taggedName} java -version"
