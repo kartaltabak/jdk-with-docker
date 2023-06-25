@@ -2,21 +2,20 @@ String cron_string = BRANCH_NAME == "main" ? "@monthly" : ""
 
 tag = new Date().format("yyyyMMdd", TimeZone.getTimeZone('UTC'))
 
-def buildImage() {
+def buildImage(String baseImage, String jdkVersion, String contextDirectory) {
     script {
-        sh 'docker pull openjdk:8-jdk'
-        jdkversion = "jdk8"
+        sh "docker pull ${baseImage}"
         docker.withRegistry('https://registry-1.docker.io', 'Dockerhub-kartaltabak') {
-            def repoName = "kartaltabak/jdk-with-docker"
-            def taggedName = repoName + ":" + jdkversion + "-" + tag
-            def image = docker.build(taggedName, "docker-jdk8")
+            String repoName = "kartaltabak/jdk-with-docker"
+            GString taggedName = "${repoName}:${jdkVersion}:-${tag}"
+            String image = docker.build(taggedName, contextDirectory)
 
             sh "docker run --rm ${taggedName} java -version"
 
             image.push()
 
-            def latestName = repoName + ":" + jdkversion
-            sh "docker tag " + taggedName + " " + latestName
+            GString latestName = "${repoName}:${jdkVersion}"
+            sh "docker tag ${taggedName}  ${latestName}"
             docker.image(latestName).push()
         }
     }
@@ -31,76 +30,11 @@ pipeline {
     stages {
         stage('Build & Push') {
             steps {
-                buildImage()
-
-                script {
-                    sh 'docker pull kartaltabak/jdk-with-docker:jdk8'
-                    jdkversion = "jdk8-maven"
-                    docker.withRegistry('https://registry-1.docker.io', 'Dockerhub-kartaltabak') {
-                        def repoName = "kartaltabak/jdk-with-docker"
-                        def taggedName = repoName + ":" + jdkversion + "-" + tag
-                        def image = docker.build(taggedName, "docker-jdk8-maven")
-
-                        sh "docker run --rm ${taggedName} java -version"
-
-                        image.push()
-
-                        def latestName = repoName + ":" + jdkversion
-                        sh "docker tag " + taggedName + " " + latestName
-                        docker.image(latestName).push()
-                    }
-                }
-                script {
-                    sh 'docker pull openjdk:11-jdk'
-                    jdkversion = "jdk11"
-                    docker.withRegistry('https://registry-1.docker.io', 'Dockerhub-kartaltabak') {
-                        def repoName = "kartaltabak/jdk-with-docker"
-                        def taggedName = repoName + ":" + jdkversion + "-" + tag
-                        def image = docker.build(taggedName, "docker-jdk11")
-
-                        sh "docker run --rm ${taggedName} java -version"
-
-                        image.push()
-
-                        def latestName = repoName + ":" + jdkversion
-                        sh "docker tag " + taggedName + " " + latestName
-                        docker.image(latestName).push()
-                    }
-                }
-                script {
-                    sh 'docker pull openjdk:15-jdk'
-                    jdkversion = "jdk15"
-                    docker.withRegistry('https://registry-1.docker.io', 'Dockerhub-kartaltabak') {
-                        def repoName = "kartaltabak/jdk-with-docker"
-                        def taggedName = repoName + ":" + jdkversion + "-" + tag
-                        def image = docker.build(taggedName, "docker-jdk15")
-
-                        sh "docker run --rm ${taggedName} java -version"
-
-                        image.push()
-
-                        def latestName = repoName + ":" + jdkversion
-                        sh "docker tag " + taggedName + " " + latestName
-                        docker.image(latestName).push()
-                    }
-                }
-                script {
-                    sh 'docker pull kartaltabak/jdk-with-docker:jdk15'
-                    jdkversion = "jdk15-maven"
-                    docker.withRegistry('https://registry-1.docker.io', 'Dockerhub-kartaltabak') {
-                        def repoName = "kartaltabak/jdk-with-docker"
-                        def taggedName = repoName + ":" + jdkversion + "-" + tag
-                        def image = docker.build(taggedName, "docker-jdk15-maven")
-
-                        sh "docker run --rm ${taggedName} java -version"
-
-                        image.push()
-
-                        def latestName = repoName + ":" + jdkversion
-                        sh "docker tag " + taggedName + " " + latestName
-                        docker.image(latestName).push()
-                    }
-                }
+                buildImage('openjdk:8-jdk', 'jdk8', 'docker-jdk8')
+                buildImage('kartaltabak/jdk-with-docker:jdk8', 'jdk8-maven', 'docker-jdk8-maven')
+                buildImage('openjdk:11-jdk', 'jdk11', 'docker-jdk11')
+                buildImage('openjdk:15-jdk', 'jdk15', 'docker-jdk15')
+                buildImage('kartaltabak/jdk-with-docker:jdk15', 'jdk15-maven', 'docker-jdk15-maven')
             }
         }
     }
