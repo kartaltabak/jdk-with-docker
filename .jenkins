@@ -8,7 +8,7 @@ def buildImage(String baseImage, String jdkVersion, String contextDirectory) {
         docker.withRegistry('https://registry-1.docker.io', 'Dockerhub-kartaltabak') {
             String repoName = "kartaltabak/jdk-with-docker"
             GString taggedName = "${repoName}:${jdkVersion}-${tag}"
-            String image = docker.build(taggedName, contextDirectory)
+            def image = docker.build(taggedName, contextDirectory)
 
             sh "docker run --rm ${taggedName} java -version"
 
