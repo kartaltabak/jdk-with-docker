@@ -62,6 +62,40 @@ pipeline {
                         docker.image(latestName).push()
                     }
                 }
+                script {
+                    sh 'docker pull openjdk:15-jdk'
+                    jdkversion = "jdk15"
+                    docker.withRegistry('https://registry-1.docker.io', 'Dockerhub-kartaltabak') {
+                        def repoName = "kartaltabak/jdk-with-docker"
+                        def taggedName = repoName + ":" + jdkversion + "-" + tag
+                        def image = docker.build(taggedName, "docker-jdk15")
+
+                        sh "docker run --rm ${taggedName} java -version"
+
+                        image.push()
+
+                        def latestName = repoName + ":" + jdkversion
+                        sh "docker tag " + taggedName + " " + latestName
+                        docker.image(latestName).push()
+                    }
+                }
+                script {
+                    sh 'docker pull kartaltabak/jdk-with-docker:jdk15'
+                    jdkversion = "jdk15-maven"
+                    docker.withRegistry('https://registry-1.docker.io', 'Dockerhub-kartaltabak') {
+                        def repoName = "kartaltabak/jdk-with-docker"
+                        def taggedName = repoName + ":" + jdkversion + "-" + tag
+                        def image = docker.build(taggedName, "docker-jdk15-maven")
+
+                        sh "docker run --rm ${taggedName} java -version"
+
+                        image.push()
+
+                        def latestName = repoName + ":" + jdkversion
+                        sh "docker tag " + taggedName + " " + latestName
+                        docker.image(latestName).push()
+                    }
+                }
             }
         }
     }

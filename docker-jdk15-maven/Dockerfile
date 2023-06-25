@@ -1,4 +1,4 @@
-FROM kartaltabak/jdk-with-docker:jdk8
+FROM kartaltabak/jdk-with-docker:jdk15
 
 ARG USERNAME=jenkins
 ARG HOME_DIR=/home/$USERNAME
