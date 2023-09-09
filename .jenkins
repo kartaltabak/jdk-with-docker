@@ -1,41 +1,47 @@
-String cron_string = BRANCH_NAME == "main" ? "@monthly" : ""
+@Library('github-jenkins-pipeline') _
 
-tag = new Date().format("yyyyMMdd", TimeZone.getTimeZone('UTC'))
-
-def buildImage(String baseImage, String jdkVersion, String contextDirectory) {
-    script {
-        sh "docker pull ${baseImage}"
-        docker.withRegistry('https://registry-1.docker.io', 'Dockerhub-kartaltabak') {
-            String repoName = "kartaltabak/jdk-with-docker"
-            GString taggedName = "${repoName}:${jdkVersion}-${tag}"
-            def image = docker.build(taggedName, contextDirectory)
-
-            sh "docker run --rm ${taggedName} java -version"
-
-            image.push()
-
-            GString latestName = "${repoName}:${jdkVersion}"
-            sh "docker tag ${taggedName}  ${latestName}"
-            docker.image(latestName).push()
-        }
-    }
-}
-
-pipeline {
-    agent any
-    options {
-        disableConcurrentBuilds()
-    }
-    triggers { cron(cron_string) }
-    stages {
-        stage('Build & Push') {
-            steps {
-                buildImage('openjdk:8-jdk', 'jdk8', 'docker-jdk8')
-                buildImage('kartaltabak/jdk-with-docker:jdk8', 'jdk8-maven', 'docker-jdk8-maven')
-                buildImage('openjdk:11-jdk', 'jdk11', 'docker-jdk11')
-                buildImage('openjdk:15-jdk', 'jdk15', 'docker-jdk15')
-                buildImage('kartaltabak/jdk-with-docker:jdk15', 'jdk15-maven', 'docker-jdk15-maven')
-            }
-        }
-    }
-}
+dockerBuildPipeline(
+        mainBranchCron: '@weekly',
+        imageBuilders: [
+                [
+                        baseImage          : 'openjdk:8-jdk',
+                        registryRepoName   : 'kartaltabak/jdk-with-docker',
+                        imageTestCommand   : 'java -version',
+                        dockerContextFolder: 'docker-jdk8',
+                        timestampTag       : 'jdk8',
+                        latestTag          : 'jdk8'
+                ],
+                [
+                        baseImage          : 'kartaltabak/jdk-with-docker:jdk8',
+                        registryRepoName   : 'kartaltabak/jdk-with-docker',
+                        imageTestCommand   : 'java -version',
+                        dockerContextFolder: 'docker-jdk8-maven',
+                        timestampTag       : 'jdk8-maven',
+                        latestTag          : 'jdk8-maven'
+                ],
+                [
+                        baseImage          : 'openjdk:11-jdk',
+                        registryRepoName   : 'kartaltabak/jdk-with-docker',
+                        imageTestCommand   : 'java -version',
+                        dockerContextFolder: 'docker-jdk11',
+                        timestampTag       : 'jdk11',
+                        latestTag          : 'jdk11'
+                ],
+                [
+                        baseImage          : 'openjdk:15-jdk',
+                        registryRepoName   : 'kartaltabak/jdk-with-docker',
+                        imageTestCommand   : 'java -version',
+                        dockerContextFolder: 'docker-jdk15',
+                        timestampTag       : 'jdk15',
+                        latestTag          : 'jdk15'
+                ],
+                [
+                        baseImage          : 'kartaltabak/jdk-with-docker:jdk15',
+                        registryRepoName   : 'kartaltabak/jdk-with-docker',
+                        imageTestCommand   : 'java -version',
+                        dockerContextFolder: 'docker-jdk15-maven',
+                        timestampTag       : 'jdk15-maven',
+                        latestTag          : 'jdk15-maven'
+                ],
+        ]
+)
