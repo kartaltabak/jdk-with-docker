@@ -3,7 +3,7 @@ FROM kartaltabak/jdk-with-docker:jdk8
 ARG USERNAME=jenkins
 ARG HOME_DIR=/home/$USERNAME
 
-ARG MAVEN_VERSION=3.9.2
+ARG MAVEN_VERSION=3.9.6
 ARG BASE_URL=https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries
 
 USER root
