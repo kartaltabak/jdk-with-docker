@@ -43,5 +43,13 @@ dockerBuildPipeline(
                         timestampTag       : 'jdk15-maven',
                         latestTag          : 'jdk15-maven'
                 ],
+                [
+                        baseImage          : 'openjdk:21-jdk',
+                        registryRepoName   : 'kartaltabak/jdk-with-docker',
+                        imageTestCommand   : 'java -version',
+                        dockerContextFolder: 'docker-jdk21',
+                        timestampTag       : 'jdk21',
+                        latestTag          : 'jdk21'
+                ],
         ]
 )
