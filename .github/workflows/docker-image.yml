@@ -43,7 +43,7 @@ jobs:
         run: |
           echo "IMAGE=${{ matrix.imageConfig.image }}" >> $GITHUB_ENV
           echo "DOCKER_CONTEXT_FOLDER=${{ matrix.imageConfig.dockerContextFolder }}" >> $GITHUB_ENV
-          echo "TEST_TAG=$(echo '${{ matrix.imageConfig.image }}-test" >> $GITHUB_ENV
+          echo "TEST_TAG=${{ matrix.imageConfig.image }}-test" >> $GITHUB_ENV
 
       - name: Build and push Docker image with timestamp
         uses: docker/build-push-action@v6
