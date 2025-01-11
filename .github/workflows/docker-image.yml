@@ -48,7 +48,7 @@ jobs:
       - name: Build and push Docker image with timestamp
         uses: docker/build-push-action@v6
         with:
-          context: $${{ env.DOCKER_CONTEXT_FOLDER }}
+          context: ${{ env.DOCKER_CONTEXT_FOLDER }}
           load: true
           tags: ${{ env.TEST_TAG }}
 
@@ -59,7 +59,7 @@ jobs:
       - name: Build and push Docker image with timestamp
         uses: docker/build-push-action@v6
         with:
-          context: $${{ env.DOCKER_CONTEXT_FOLDER }}
+          context: ${{ env.DOCKER_CONTEXT_FOLDER }}
           push: true
           tags: |
             ${{ env.IMAGE }}
