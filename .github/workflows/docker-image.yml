@@ -18,10 +18,6 @@ jobs:
             dockerContextFolder: "docker-jdk8-maven"
           - image: "kartaltabak/jdk-with-docker:jdk11"
             dockerContextFolder: "docker-jdk11"
-          - image: "kartaltabak/jdk-with-docker:jdk15"
-            dockerContextFolder: "docker-jdk15"
-          - image: "kartaltabak/jdk-with-docker:jdk15-maven"
-            dockerContextFolder: "docker-jdk15-maven"
           - image: "kartaltabak/jdk-with-docker:jdk21"
             dockerContextFolder: "docker-jdk21"
 
