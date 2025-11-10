@@ -1,6 +1,6 @@
 FROM kartaltabak/jdk-with-docker:jdk8
 
-ARG USERNAME=jenkins
+ARG USERNAME=ubuntu
 ARG HOME_DIR=/home/$USERNAME
 
 ARG MAVEN_VERSION=3.9.6
@@ -14,8 +14,8 @@ RUN mkdir -p /usr/share/maven \
   && rm -f /tmp/apache-maven.tar.gz \
   && ln -s /usr/share/maven/bin/mvn /usr/bin/mvn
 
-ENV MAVEN_HOME /usr/share/maven
-ENV MAVEN_CONFIG "${HOME_DIR}/.m2"
+ENV MAVEN_HOME=/usr/share/maven
+ENV MAVEN_CONFIG="${HOME_DIR}/.m2"
 
 USER ${USERNAME}
 
