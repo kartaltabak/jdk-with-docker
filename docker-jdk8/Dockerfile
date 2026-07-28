@@ -5,17 +5,22 @@ ARG DOCKER_GID=1001
 
 ARG DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update \
-    && apt-get -y install \
-    software-properties-common
-
 RUN groupadd -g ${DOCKER_GID} docker
 
-RUN (curl -fsSL https://download.docker.com/linux/ubuntu/gpg | \
-     apt-key --keyring /etc/apt/trusted.gpg.d/docker-apt-key.gpg add ) \
-    && add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian stretch stable" \
+RUN  curl -fsSL https://download.docker.com/linux/ubuntu/gpg \
+        -o /etc/apt/keyrings/docker.asc \
+    && . /etc/os-release \
+    && printf '%s\n' \
+        "Types: deb" \
+        "URIs: https://download.docker.com/linux/ubuntu" \
+        "Suites: ${UBUNTU_CODENAME:-$VERSION_CODENAME}" \
+        "Components: stable" \
+        "Architectures: $(dpkg --print-architecture)" \
+        "Signed-By: /etc/apt/keyrings/docker.asc" \
+        > /etc/apt/sources.list.d/docker.sources \
     && apt-get update \
-    && apt-get -y install docker-ce \
-    && usermod -aG docker $USERNAME
+    && apt-get -y install docker-ce-cli docker-buildx-plugin docker-compose-plugin
 
-USER $USERNAME
+RUN usermod -aG docker "${USERNAME}"
+
+USER "${USERNAME}"
